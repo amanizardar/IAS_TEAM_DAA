@@ -1,4 +1,5 @@
 from distutils.command.config import config
+from flask import render_template
 import requests
 import json
 import socket
@@ -8,7 +9,7 @@ import socket
 username="xyz"
 
 def handle_data_scientist():
-    pass
+    render_template
 
 def handle_app_developer():
     pass
