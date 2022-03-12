@@ -1,22 +1,26 @@
-from aiohttp import request
+from flask import Flask, request, render_template
 from flask import Flask
 import requests
 
 app = Flask(__name__)
 
-@app.route('/signin', methods = ['GET', 'POST'])
+@app.route('/signup', methods = ['GET', 'POST'])
 def signin():
-    pass
+    data = request.get_json()
+    print("data got = ",data)
+    response=requests.post('http://localhost:1235/add_user',json=data).content
+    return "ok"
 
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
-    data = request.get_json()
-    response=requests.post('http://localhost:1235/authen',json=to_send).content
-    if(response=="ok"):
-        return True
-    else:
-        return False
+    if(request.method=='POST'): 
+        data = request.get_json()
+        response=requests.post('http://localhost:1235/authen',json=data).content.decode()
+        if(response=="ok"):
+            return "ok"
+        else:
+            return "Error"
 
 
 

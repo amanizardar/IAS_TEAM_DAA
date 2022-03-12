@@ -7,8 +7,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user.db'
 app.config['SECRET_KEY'] = 'secretkey'
 
 db = SQLAlchemy(app)
-# login_manager = LoginManager()
-# login_manager.init_app(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 
 class User(UserMixin, db.Model):
@@ -21,8 +21,11 @@ class User(UserMixin, db.Model):
 @app.route('/add_user', methods = ['GET', 'POST'])
 def do_signup():
     if(request.method=='POST'):
-        username = request.form['username']
-        password = request.form['password']
+        data=request.get_json()
+        username = data['username']
+        password = data['password']
+        print("username is ",username)
+        print("Password is ",password)
         check_user = User.query.filter_by(username=username).first()
         if(check_user is not None):
             return "User already registered, please sign in"
@@ -35,13 +38,14 @@ def do_signup():
 @app.route('/authen', methods = ['GET', 'POST'])
 def authen():
     if(request.method=='POST'):
-        username = request.form['username']
-        password = request.form['password']
+        data=request.get_json()
+        username = data['username']
+        password = data['password']
         check_user = User.query.filter_by(username=username).first()
         if(check_user is not None):
             if(check_user.password == password):
                 login_user(check_user)
-                return "LOGGED in successfully"
+                return "ok"
             else:
                 return "Incorrect Password"
         else:
@@ -51,3 +55,4 @@ def authen():
 
 if(__name__ == '__main__'):
     app.run(port=1235,debug=True)
+    db.create_all()
