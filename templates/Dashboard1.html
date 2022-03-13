@@ -72,55 +72,92 @@
         
     </header>
     <!-- [ Header ] end -->
-
     
-
     <!-- [ Main Content ] start -->
     <div class="pcoded-main-container">
         <div class="pcoded-wrapper">
-            <div class="pcoded-content">
-                <div class="pcoded-inner-content">
+            <div class="pcoded-content row">
+                <div class="pcoded-inner-content col-10">
                     <!-- [ breadcrumb ] start -->
                     <p>Welcome {{ username }}</p>
-                    <button type="button" class="btn btn-primary">Deploy New Application</button>
-                    <div class="upload custom-file" >
+                    <div ><h3>Deploy New Application</h3></div>
+                    <hr>
+                    <div class="upload custom-file center" >
                     
-                        <form enctype = "multipart/form-data" action = "http://localhost:8080/Upload_AD" method = "post">
+                        <form id="myForm" enctype = "multipart/form-data" action = "http://localhost:8080/Upload_DS" method = "post" >
+                            <div class="row align-items-end">
+                            <p class="col-7">Upload File: <input type = "file" name = "filename" required /></p>
 
-                            <p>Upload File: <input type = "file" name = "filename" required /></p>
                             <input type="hidden" name="username" value="{{ username }}" />
                              
-                                
-                            <p><input type = "submit" value = "Upload" /></p>
+                            <p class="col-3"><input class="btn btn-primary" type = "submit" value = "Upload" /></p>
+                            </div>
                         </form>
                     </div>
-                
-
+                </div>
+            </br>
+        </br></br>  
+                <div class= "col-10">
+                    <br>
+                    <br>
                     <!-- [ breadcrumb ] end -->
                     <div class="main-body">
                         <div class="page-wrapper">
                             <!-- [ Main Content ] start -->
                             <div class="row">
                               
-                                <div class="col-xl-8 col-md-6">
+                                <div class="col-12">
                                     <div class="card Recent-Users">
-                                        <div class="card-header">
-                                            <h5>Uploaded Application and Available models</h5>
+                                        <div class="">
+                                            <h3>Uploaded Models And Applications</h3>
                                         </div>
-                                        
-                                        <div class="card-block px-0 py-3">
-                                            <div class="table-responsive">
-                                                <table class="table table-hover">
+                                        <hr>
+                                        <div class="row align-items-end" >
+                                            <div class="table-responsive col-6" style="overflow: hidden;">
+                                                <h4>Apps</h4>
+                                                <table class="table table-hover col-6" style="border-right: 2px solid">
                                                     <tbody>
-                                                        {% for key in response %}
+                                                        {% for key in response1 %}
         
-                                                        <tr class="unread">
+                                                        <tr class="unread row" style="padding:1em">
                                                             <!-- <td><img class="rounded-circle" style="width:40px;" src="assets/images/user/avatar-1.jpg" alt="activity-user"></td> -->
-                                                            <td>
+                                                            <td class = "col-6">
                                                                 <h6 class="mb-1">{{ key }}</h6>
                                                                 <!-- <p class="m-0">AI Model</p> -->
                                                             </td>
+                                                            <td class = "col-5">
+                                                                <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>11 MAY 12:56</h6>
+                                                            </td>
+                                                            <!-- <td><a href="#!" class="label theme-bg2 text-white f-12">Delete</a> -->
+                                                        </tr>
+                                                        <!-- <tr class="unread"> -->
+                                                            <!-- <td><img class="rounded-circle" style="width:40px;" src="assets/images/user/avatar-2.jpg" alt="activity-user"></td> -->
+                                                            <!-- <td>
+                                                                <h6 class="mb-1">Face Detection</h6>
+                                                                <p class="m-0">Nlp Model</p>
+                                                            </td>
                                                             <td>
+                                                                <h6 class="text-muted"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>11 MAY 10:35</h6>
+                                                            </td>
+                                                            <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a>
+                                                        </tr> -->
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="col-6">
+                                                <h4>Models</h4>
+                                                <table class="table table-hover col-6" >
+                                                    <tbody>
+                                                        {% for key in response %}
+        
+                                                        <tr class="unread row" style="padding:1em">
+                                                            <!-- <td><img class="rounded-circle" style="width:40px;" src="assets/images/user/avatar-1.jpg" alt="activity-user"></td> -->
+                                                            <td class = "col-6">
+                                                                <h6 class="mb-1">{{ key }}</h6>
+                                                                <!-- <p class="m-0">AI Model</p> -->
+                                                            </td>
+                                                            <td class = "col-5">
                                                                 <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>11 MAY 12:56</h6>
                                                             </td>
                                                             <!-- <td><a href="#!" class="label theme-bg2 text-white f-12">Delete</a> -->
@@ -146,6 +183,11 @@
                                 
     <![endif]-->
     <!-- Warning Section Ends -->
+
+    <!-- Required Js -->
+    
+
+   
 
     <!-- Required Js -->
 <script src="../static/assets/js/vendor-all.min.js"></script>
