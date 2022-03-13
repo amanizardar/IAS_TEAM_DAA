@@ -5,7 +5,7 @@ import cgi, os
 import cgitb; cgitb.enable()
 from werkzeug.utils import secure_filename
 
-usename ="user"
+username ="user"
 password="admin"
 
 app = Flask(__name__)
@@ -71,7 +71,9 @@ def signup():
             to_send["username"]=username
             response=requests.post('http://localhost:1237/get_apps',json=to_send).content
             response =response.decode().split()
-            return render_template("Dashboard.html",response=response)
+            response2=requests.post('http://localhost:1237/get_all_models',json=to_send).content.decode().split()
+
+            return render_template("Dashboard1.html",response=response,response2=response2)
     else:
         return "Error"
 
@@ -88,12 +90,13 @@ def logup():
             to_send["username"]=username
             response=requests.post('http://localhost:1237/get_apps',json=to_send).content
             response =response.decode().split()
-            return render_template("Dashboard.html",response=response)
+            response2=requests.post('http://localhost:1237/get_all_models',json=to_send).content.decode().split()
+            return render_template("Dashboard1.html",response=response,response2=response2)
         else:
             return "Error"
 
-@app.route('/Upload', methods = ['GET', 'POST'])
-def upload():
+@app.route('/Upload_DS', methods = ['GET', 'POST'])
+def uploadds():
     if(request.method=='POST'): 
 
         # Send this request to Scheduler
@@ -106,7 +109,7 @@ def upload():
 
         to_send={}
 
-        global username
+        # global username
         
         
 
@@ -125,22 +128,39 @@ def upload():
         print(f)
         print(f.filename)
 
+        return "KK"
 
+@app.route('/Upload_AD', methods = ['GET', 'POST'])
+def uploadad():
+    if(request.method=='POST'): 
 
-        # f.save(secure_filename(f.filename))
+        # Send this request to Scheduler
 
         
-        # form = cgi.FieldStorage()
-        # this_fileitem = form['filename']
-        # if f.filename:
-        #     fn = os.path.basename(f.filename)
-        #     open('./Data/Model/' + fn, 'w').write(f.file.read())
-        #     message = 'The file "' + fn + '" was uploaded successfully'
-        # else:
-        #     message = 'No file was uploaded'
-       
-        # print(message)
-        return "KK"
+
+        # Just maintaining a copy here.
+
+        # app.config['UPLOAD_FOLDER'] = "./Data/Model/"
+
+        to_send={}
+
+        # global username
+        
+        
+
+        f = request.files['filename']
+        f.save(os.path.join("./Data/App/", f.filename))
+
+        to_send["username"]=username
+        to_send["app_name"]=f.filename
+        response=requests.post('http://localhost:1237/add_app',json=to_send).content
+        if(response.decode()=="ok"):
+            return "app uploaded"
+        else:
+            return "error"
+
+
+  
 
 
 

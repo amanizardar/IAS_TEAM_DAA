@@ -93,6 +93,24 @@ def get_model():
             return "NONE"
         return res
 
+@app.route('/get_all_models', methods = ['GET', 'POST'])
+def get_all_model():
+    if(request.method=='POST'):
+        print("hi")
+        data=request.get_json()
+        
+        
+        models = Models.query.all()
+
+        res=""
+
+        for model in models:
+            res+=model.model_name+" "
+
+        if(res==""):
+            return "NONE"
+        return res
+
 @app.route('/get_apps', methods = ['GET', 'POST'])
 def get_app():
     if(request.method=='POST'):
