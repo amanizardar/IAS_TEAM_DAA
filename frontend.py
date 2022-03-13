@@ -1,108 +1,86 @@
-from distutils.command.config import config
-from flask import render_template
+from flask import Flask, request, render_template
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, login_manager, login_user, logout_user, login_required, UserMixin
 import requests
-import json
-import socket
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+   return render_template('index.html')
 
 
+@app.route('/role',methods = ['POST', 'GET'])
+def role():
+    if (request.method == 'POST'):
+        rol = request.form['role']
+        if(rol=='Data Scientist'):
 
-username="xyz"
+          return render_template('dem.html')
+          
+          user=input("Please Enter Your Username: ")
+          password=(input("Enter Password: "))
+          if(isvalid(user,password)):
+              username=user
+              do_operations()
+          else:
+              print("Please Try again Username or password is not valid")
+    
+        else:
+            return render_template('dema.html')
 
-def handle_data_scientist():
-    render_template
 
-def handle_app_developer():
-    pass
-
-def download_config():
-    s= socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    s.connect(("127.0.0.1",1236))
-
-    with open("config.json") as f:
-        while 1:
-            data = s.recv(1024)
-
-            if not data:
-                break
-            f.write(data)
-    s.close()
-    print("Config_file",'successfully downloaded.')
-
-def do_operations():
-    print("you are inside do_operation method")
-    print("Press 1 if you are Want to deploy your AI model")
-    print("Press 2 if you are Want to deploy your Application")
-    print("Press 3 To Download Platform Config File")
-    print("Press 4 to exit")
-
-    opt = int(input())
-
-    if(opt==1):
-    # Data_Scientist handle
-        handle_data_scientist()
-        
-
-    elif(opt==2):
-        # App developer
-        handle_app_developer()
-
-    elif(opt==3):
-        download_config()
-
-    elif(opt==4):
-        exit()
+@app.route('/signup_DS', methods = ['GET', 'POST'])
+def signin():
+    username=request.form['username']
+    password=request.form['password']
+    # data = request.get_json()
+    # print("data got = ",data)
+    response=requests.post('http://localhost:5000/add_user_DS',json={'username':username,'password':password}).content
+    if(response.decode()=="ok"):
+        return render_template("index.html")
     else:
-        print("Error Please Try again!")
-
-
-
-
-
-
+        return "Error"
     
 
-def isvalid(username,password):
-    to_send={}
-    to_send["username"]=username
-    to_send["password"]=password
-    response=requests.post('http://localhost:1234/login',json=to_send).content.decode()
-    if(response=="ok"):
-        return True
+
+@app.route('/login_DS', methods = ['GET', 'POST'])
+def login():
+    if(request.method=='POST'): 
+        username=request.form['username']
+        password=request.form['password']
+        # data = request.get_json()
+        response=requests.post('http://localhost:5000/authen_DS',json={'username':username,'password':password}).content.decode()
+        if(response=="ok"):
+            return "ok"
+        else:
+            return "Error"
+
+@app.route('/signup_AD', methods = ['GET', 'POST'])
+def signup():
+    # data = request.get_json()
+    username=request.form['username']
+    password=request.form['password']
+    # print("data got = ",data)
+    response=requests.post('http://localhost:5000/add_user_AD',json={'username':username,'password':password}).content
+    if(response.decode()=="ok"):
+        return render_template("index.html")
     else:
-        return False
-
-def signup(username,password):
-    to_send={}
-    to_send["username"]=username
-    to_send["password"]=password
-    response=requests.post('http://localhost:1234/signup',json=to_send).content
-    return
+        return "Error"
 
 
+@app.route('/login_AD', methods = ['GET', 'POST'])
+def logup():
+    if(request.method=='POST'): 
+        # data = request.get_json()
+        username=request.form['username']
+        password=request.form['password']
+        response=requests.post('http://localhost:5000/authen_AD',json={'username':username,'password':password}).content.decode()
+        if(response=="ok"):
+            return "ok"
+        else:
+            return "Error"
 
-print("Welcome To The AI PLATFORM")
-print("Please Login To continue")
-print("Press 1 for Login, 2 For SignUp, and 3 for Exit")
+if(__name__ == '__main__'):
+    app.run(port=1234,debug=True)
 
-opt = int(input())
-if(opt==1):
-    # Login
-    user=input("Please Enter Your Username: ")
-    password=(input("Enter Password: "))
-    if(isvalid(user,password)):
-        username=user
-        do_operations()
-    else:
-        print("Please Try again Username or password is not valid")
-
-elif(opt==2):
-    # SignUp
-    user=input("Please Enter Your Username: ")
-    password=(input("Enter Password: "))
-    signup(user,password)
-    username=user
-    do_operations()
-
-
-else:
-    exit()
