@@ -64,7 +64,7 @@ def add_app():
         
         check_app=Apps.query.filter_by(App_name=app_name).first()
         if(check_app is None):
-            new_app = Apps(username=username, App_namw=app_name)
+            new_app = Apps(username=username, App_name=app_name)
             db.session.add(new_app)
             db.session.commit()
             return "ok"
