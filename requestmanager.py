@@ -4,6 +4,7 @@ import requests
 import cgi, os
 import cgitb; cgitb.enable()
 from werkzeug.utils import secure_filename
+from flask import redirect
 
 # username ="user"
 password="admin"
@@ -137,6 +138,7 @@ def uploadds():
 
         # Send this request to Scheduler
 
+        redirect("url_for('operation')", code=307)
         
 
         # Just maintaining a copy here.
@@ -173,7 +175,7 @@ def uploadad():
 
         # Send this request to Scheduler
 
-        
+        redirect("url_for('operation')", code=307)
 
         # Just maintaining a copy here.
 
