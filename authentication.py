@@ -1,9 +1,9 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_manager, login_user, logout_user, login_required, UserMixin
 import requests
-
-
+import datetime
+import jwt
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///User.db'
 app.config['SECRET_KEY'] = 'secretkey'
@@ -24,12 +24,69 @@ class User_DS(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
+    def encode_auth_token(self, user_id):
+        try:
+            payload = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+                'iat': datetime.datetime.utcnow(),
+                'sub': user_id
+            }
+            return jwt.encode(
+                payload,
+                app.config.get('SECRET_KEY'),
+                algorithm='HS256'
+            )
+        except Exception as e:
+            return e
+
+    @staticmethod
+    def decode_auth_token(auth_token):
+        """
+        Decodes the auth token
+        :param auth_token:
+        :return: integer|string
+        """
+        try:
+            payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            return 'Signature expired. Please log in again.'
+        except jwt.InvalidTokenError:
+            return 'Invalid token. Please log in again.'
 
 class User_AD(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
+    def encode_auth_token(self, user_id):
+        try:
+            payload = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+                'iat': datetime.datetime.utcnow(),
+                'sub': user_id
+            }
+            return jwt.encode(
+                payload,
+                app.config.get('SECRET_KEY'),
+                algorithm='HS256'
+            )
+        except Exception as e:
+            return e
 
+        @staticmethod
+        def decode_auth_token(auth_token):
+            """
+            Decodes the auth token
+            :param auth_token:
+            :return: integer|string
+            """
+            try:
+                payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
+                return payload['sub']
+            except jwt.ExpiredSignatureError:
+                return 'Signature expired. Please log in again.'
+            except jwt.InvalidTokenError:
+                return 'Invalid token. Please log in again.'
 
 # class model(UserMixin,db.Model):
 #     # id = db.Column(db.Integer, primary_key = True)
@@ -137,12 +194,20 @@ def do_signup():
         print("Password is ",password)
         check_user = User_DS.query.filter_by(username=username).first()
         if(check_user is not None):
-            return "User already registered, please sign in"
+            responseObject = {
+                'status': 'Failed',
+                'message': "User already registered, please sign in"
+            }
+            return make_response(jsonify(responseObject)), 409
         else:
             user = User_DS(username=username, password=password)
             db.session.add(user)
             db.session.commit()
-            return "ok"
+            responseObject = {
+                'status': 'success',
+                'message': "ok"
+            }
+            return make_response(jsonify(responseObject)), 200
 
 @app.route('/authen_DS', methods = ['GET', 'POST'])
 def authen():
@@ -154,11 +219,26 @@ def authen():
         if(check_user is not None):
             if(check_user.password == password):
                 login_user(check_user)
-                return "ok"
+                auth_token = check_user.encode_auth_token(check_user.id)
+                if auth_token:
+                    responseObject = {
+                        'status': 'success',
+                        'message': 'ok',
+                        'auth_token': auth_token
+                    }
+                return make_response(jsonify(responseObject)), 200
             else:
-                return "Incorrect Password"
+                responseObject = {
+                        'status': 'Failed',
+                        'message': "Incorrect Password"
+                    }
+                return make_response(jsonify(responseObject)), 401
         else:
-            return "No such User exists"
+            responseObject = {
+                    'status': 'Failed',
+                    'message': "No such User exists"
+                }
+            return make_response(jsonify(responseObject)), 401
 
 @app.route('/add_user_AD', methods = ['GET', 'POST'])
 def do_signupad():
@@ -170,12 +250,20 @@ def do_signupad():
         print("Password is ",password)
         check_user = User_AD.query.filter_by(username=username).first()
         if(check_user is not None):
-            return "User already registered, please sign in"
+            responseObject = {
+                'status': 'Failed',
+                'message': "User already registered, please sign in"
+            }
+            return make_response(jsonify(responseObject)), 409
         else:
             user = User_AD(username=username, password=password)
             db.session.add(user)
             db.session.commit()
-            return "ok"
+            responseObject = {
+                'status': 'success',
+                'message': "ok"
+            }
+            return make_response(jsonify(responseObject)), 200
 
 @app.route('/authen_AD', methods = ['GET', 'POST'])
 def authenad():
@@ -187,12 +275,26 @@ def authenad():
         if(check_user is not None):
             if(check_user.password == password):
                 login_user(check_user)
-                return "ok"
+                auth_token = check_user.encode_auth_token(check_user.id)
+                if auth_token:
+                    responseObject = {
+                        'status': 'success',
+                        'message': 'ok',
+                        'auth_token': auth_token
+                    }
+                return make_response(jsonify(responseObject)), 200
             else:
-                return "Incorrect Password"
+                responseObject = {
+                        'status': 'Failed',
+                        'message': "Incorrect Password"
+                    }
+                return make_response(jsonify(responseObject)), 401
         else:
-            return "No such User exists"
-
+            responseObject = {
+                    'status': 'Failed',
+                    'message': "No such User exists"
+                }
+            return make_response(jsonify(responseObject)), 401
 
 
 if(__name__ == '__main__'):
