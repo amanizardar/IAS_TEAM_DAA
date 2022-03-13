@@ -81,18 +81,21 @@
             <div class="pcoded-content">
                 <div class="pcoded-inner-content">
                     <!-- [ breadcrumb ] start -->
+                    <p>Welcome {{ username }}</p>
                     <button type="button" class="btn btn-primary">Deploy New Model</button>
                     <div class="upload custom-file" >
                     
                         <form id="myForm" enctype = "multipart/form-data" action = "http://localhost:8080/Upload_DS" method = "post" >
 
                             <p>Upload File: <input type = "file" name = "filename" required /></p>
+                            <input type="hidden" name="username" value="{{ username }}" />
                              
                                 
                             <p><input type = "submit" value = "Upload" /></p>
                         </form>
                     </div>
-                
+                    
+                    
 
                     <!-- [ breadcrumb ] end -->
                     <div class="main-body">
@@ -149,6 +152,13 @@
 <script src="../static/assets/js/vendor-all.min.js"></script>
 	<script src="../static/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script src="../static/assets/js/pcoded.min.js"></script>
+
+    <script>
+        $('#myForm').submit(function () {
+        sendContactForm();
+        return false;
+        });
+    </script>
 
 </body>
 </html>

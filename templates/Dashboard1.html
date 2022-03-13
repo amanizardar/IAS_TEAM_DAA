@@ -81,12 +81,14 @@
             <div class="pcoded-content">
                 <div class="pcoded-inner-content">
                     <!-- [ breadcrumb ] start -->
+                    <p>Welcome {{ username }}</p>
                     <button type="button" class="btn btn-primary">Deploy New Application</button>
                     <div class="upload custom-file" >
                     
                         <form enctype = "multipart/form-data" action = "http://localhost:8080/Upload_AD" method = "post">
 
                             <p>Upload File: <input type = "file" name = "filename" required /></p>
+                            <input type="hidden" name="username" value="{{ username }}" />
                              
                                 
                             <p><input type = "submit" value = "Upload" /></p>

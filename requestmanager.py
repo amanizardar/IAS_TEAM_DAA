@@ -5,7 +5,7 @@ import cgi, os
 import cgitb; cgitb.enable()
 from werkzeug.utils import secure_filename
 
-username ="user"
+# username ="user"
 password="admin"
 
 app = Flask(__name__)
@@ -37,7 +37,7 @@ def signin():
         response=requests.post('http://localhost:1237/get_models',json=to_send).content
         response =response.decode().split()
 
-        return render_template("Dashboard.html",response=response)
+        return render_template("Dashboard.html",response=response,username=username)
     else:
         return "Error"
     
@@ -55,7 +55,7 @@ def login():
             to_send["username"]=username
             response=requests.post('http://localhost:1237/get_models',json=to_send).content
             response =response.decode().split()
-            return render_template("Dashboard.html",response=response)
+            return render_template("Dashboard.html",response=response,username=username)
         else:
             return "Error"
 
@@ -73,7 +73,7 @@ def signup():
             response =response.decode().split()
             response2=requests.post('http://localhost:1237/get_all_models',json=to_send).content.decode().split()
 
-            return render_template("Dashboard1.html",response=response,response2=response2)
+            return render_template("Dashboard1.html",response=response,response2=response2,username=username)
     else:
         return "Error"
 
@@ -91,7 +91,7 @@ def logup():
             response=requests.post('http://localhost:1237/get_apps',json=to_send).content
             response =response.decode().split()
             response2=requests.post('http://localhost:1237/get_all_models',json=to_send).content.decode().split()
-            return render_template("Dashboard1.html",response=response,response2=response2)
+            return render_template("Dashboard1.html",response=response,response2=response2,username=username)
         else:
             return "Error"
 
@@ -110,7 +110,8 @@ def uploadds():
         to_send={}
 
         # global username
-        
+        username = request.form["username"]
+        # print("username is ",user)
         
 
         f = request.files['filename']
@@ -146,7 +147,7 @@ def uploadad():
 
         # global username
         
-        
+        username = request.form["username"]
 
         f = request.files['filename']
         f.save(os.path.join("./Data/App/", f.filename))
