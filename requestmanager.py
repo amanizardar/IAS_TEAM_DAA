@@ -1,5 +1,4 @@
-from flask import Flask, request, render_template
-from flask import Flask
+from flask import Flask, session, request, render_template, redirect
 from authentication import User_AD, User_DS
 import requests
 import cgi, os
@@ -7,11 +6,18 @@ import json
 import jwt
 import cgitb; cgitb.enable()
 from werkzeug.utils import secure_filename
+from flask_session import Session
 
 usename ="user"
 password="admin"
 
+
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secretkey'
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
+# session["auth_token"] = ''
 @app.route('/')
 def home():
    return render_template('index.html')
@@ -21,8 +27,7 @@ def role():
     if (request.method == 'POST'):
         rol = request.form['role']
         if(rol=='Data Scientist'):
-
-          return render_template('dem.html')
+            return render_template('dem.html')
         else:
             return render_template('dema.html')
 
@@ -50,7 +55,8 @@ def signin():
     payload = json.loads(response)
     if(payload["message"]=="ok"):
         to_send={}
-        to_send["username"]=username
+        to_send["username"] = username
+        session["auth_token"] = payload["auth_token"]
         response=requests.post('http://localhost:1237/get_models',json=to_send).content
         response =response.decode().split()
 
@@ -71,6 +77,7 @@ def login():
         if(payload["message"]=="ok"):
             to_send={}
             to_send["username"]=username
+            session["auth_token"] = payload["auth_token"]
             response=requests.post('http://localhost:1237/get_models',json=to_send).content
             response =response.decode().split()
             return render_template("Dashboard.html",response=response)
@@ -88,6 +95,7 @@ def signup():
     if(payload["message"]=="ok"):
             to_send={}
             to_send["username"]=username
+            session["auth_token"] = payload["auth_token"]
             response=requests.post('http://localhost:1237/get_apps',json=to_send).content
             response =response.decode().split()
             return render_template("Dashboard.html",response=response)
@@ -106,11 +114,18 @@ def logup():
         if(payload["message"]=="ok"):
             to_send={}
             to_send["username"]=username
+            session["auth_token"] = payload["auth_token"]
             response=requests.post('http://localhost:1237/get_apps',json=to_send).content
             response =response.decode().split()
             return render_template("Dashboard.html",response=response)
         else:
             return "Error"
+
+
+@app.route("/logout", methods = ['GET', 'POST'])
+def logout():
+    session["auth_token"] = None
+    return redirect("/")
 
 @app.route('/Upload', methods = ['GET', 'POST'])
 def upload():
@@ -136,41 +151,38 @@ def upload():
         #     auth_token = auth_header.split(" ")[1]
         # else:
         #     auth_token = ''
-        # if auth_token:
-        # resp = decode_auth_token(auth_token)
-        # if not isinstance(resp, str):
-        ##########################
-        f = request.files['filename']
-        f.save(os.path.join("./Data/Model/", f.filename))
 
-        to_send["username"]=username
-        to_send["model_name"]=f.filename
-        response=requests.post('http://localhost:1237/add_model',json=to_send).content.decode()
-        if(response.decode()=="ok"):
-            return "Model uploaded"
+        if  session["auth_token"] :
+            resp = decode_auth_token( session["auth_token"] )
+            if not isinstance(resp, str):
+                f = request.files['filename']
+                f.save(os.path.join("./Data/Model/", f.filename))
+                to_send["username"]=username
+                to_send["model_name"]=f.filename
+                response=requests.post('http://localhost:1237/add_model',json=to_send).content.decode()
+                if(response.decode()=="ok"):
+                    return "Model uploaded"
+                else:
+                    return "error"
+
+
+                print(f)
+                print(f.filename)
+
+                # f.save(secure_filename(f.filename))
+                # form = cgi.FieldStorage()
+                # this_fileitem = form['filename']
+                # if f.filename:
+                #     fn = os.path.basename(f.filename)
+                #     open('./Data/Model/' + fn, 'w').write(f.file.read())
+                #     message = 'The file "' + fn + '" was uploaded successfully'
+                # else:
+                #     message = 'No file was uploaded'
+                # print(message)
+                return "KK"
         else:
             return "error"
 
-
-        print(f)
-        print(f.filename)
-
-
-
-        # f.save(secure_filename(f.filename))
-
-        
-        # form = cgi.FieldStorage()
-        # this_fileitem = form['filename']
-        # if f.filename:
-        #     fn = os.path.basename(f.filename)
-        #     open('./Data/Model/' + fn, 'w').write(f.file.read())
-        #     message = 'The file "' + fn + '" was uploaded successfully'
-        # else:
-        #     message = 'No file was uploaded'
-    
-        # print(message)
-        return "KK"
 
 if(__name__ == '__main__'):
     app.run(port=8080,debug=True)

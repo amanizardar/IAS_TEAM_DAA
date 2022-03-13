@@ -203,9 +203,11 @@ def do_signup():
             user = User_DS(username=username, password=password)
             db.session.add(user)
             db.session.commit()
+            auth_token = user.encode_auth_token(user.id)
             responseObject = {
                 'status': 'success',
-                'message': "ok"
+                'message': "ok",
+                'auth_token': auth_token
             }
             return make_response(jsonify(responseObject)), 200
 
@@ -259,9 +261,11 @@ def do_signupad():
             user = User_AD(username=username, password=password)
             db.session.add(user)
             db.session.commit()
+            auth_token = user.encode_auth_token(user.id)
             responseObject = {
                 'status': 'success',
-                'message': "ok"
+                'message': "ok",
+                'auth_token': auth_token
             }
             return make_response(jsonify(responseObject)), 200
 
