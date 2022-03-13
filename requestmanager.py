@@ -27,9 +27,9 @@ def role():
     if (request.method == 'POST'):
         rol = request.form['role']
         if(rol=='Data Scientist'):
-            return render_template('dem.html')
+            return render_template('dem.html',authcode=None)
         else:
-            return render_template('dema.html')
+            return render_template('dema.html',authcode=None)
 
 def decode_auth_token(auth_token):
     """
@@ -62,7 +62,7 @@ def signin():
 
         return render_template("Dashboard.html",response=response)
     else:
-        return "Error"
+        return render_template('dem.html',authcode="error")
     
 
 
@@ -80,9 +80,9 @@ def login():
             session["auth_token"] = payload["auth_token"]
             response=requests.post('http://localhost:1237/get_models',json=to_send).content
             response =response.decode().split()
-            return render_template("Dashboard.html",response=response)
+            return render_template("Dashboard.html",response=response,authcode=None)
         else:
-            return "Error"
+            return render_template('dem.html',authcode="error")
 
 @app.route('/signup_AD', methods = ['GET', 'POST'])
 def signup():
@@ -100,7 +100,7 @@ def signup():
             response =response.decode().split()
             return render_template("Dashboard.html",response=response)
     else:
-        return "Error"
+        return render_template('dema.html',authcode="error")
 
 
 @app.route('/login_AD', methods = ['GET', 'POST'])
@@ -119,7 +119,7 @@ def logup():
             response =response.decode().split()
             return render_template("Dashboard.html",response=response)
         else:
-            return "Error"
+            return render_template('dema.html',authcode="error")
 
 
 @app.route("/logout", methods = ['GET', 'POST'])
