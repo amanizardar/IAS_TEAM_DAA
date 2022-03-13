@@ -57,13 +57,11 @@
                 <li><a href="javascript:" class="full-screen" onclick="javascript:toggleFullScreen()"><i class="feather icon-maximize"></i></a></li>
                 <li class="nav-item dropdown">
                     <a class="dropdown-toggle" href="javascript:" data-toggle="dropdown">Dashboard</a>
-                    <!---
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="javascript:">Action</a></li>
                         <li><a class="dropdown-item" href="javascript:">Another action</a></li>
                         <li><a class="dropdown-item" href="javascript:">Something else here</a></li>
                     </ul>
-                    --->
                 </li>
               
             </ul>
@@ -74,17 +72,15 @@
         
     </header>
     <!-- [ Header ] end -->
-
     
-
     <!-- [ Main Content ] start -->
     <div class="pcoded-main-container">
         <div class="pcoded-wrapper">
             <div class="pcoded-content row">
-                <div class="pcoded-inner-content col-9">
+                <div class="pcoded-inner-content col-10">
                     <!-- [ breadcrumb ] start -->
                     <p>Welcome {{ username }}</p>
-                    <div ><h3>Deploy New Model</h3></div>
+                    <div ><h3>Deploy New Application</h3></div>
                     <hr>
                     <div class="upload custom-file center" >
                     
@@ -101,8 +97,9 @@
                 </div>
             </br>
         </br></br>  
-                <div class= "col-9">
-                    <hr>
+                <div class= "col-10">
+                    <br>
+                    <br>
                     <!-- [ breadcrumb ] end -->
                     <div class="main-body">
                         <div class="page-wrapper">
@@ -112,12 +109,45 @@
                                 <div class="col-12">
                                     <div class="card Recent-Users">
                                         <div class="">
-                                            <h3>Uploaded Models</h3>
+                                            <h3>Uploaded Models And Applications</h3>
                                         </div>
-                                        
-                                        <div class="" >
-                                            <div class="table-responsive" style="overflow: hidden;">
-                                                <table class="table table-hover col-11" >
+                                        <hr>
+                                        <div class="row align-items-end" >
+                                            <div class="table-responsive col-6" style="overflow: hidden;">
+                                                <h4>Apps</h4>
+                                                <table class="table table-hover col-6" style="border-right: 2px solid">
+                                                    <tbody>
+                                                        {% for key in response1 %}
+        
+                                                        <tr class="unread row" style="padding:1em">
+                                                            <!-- <td><img class="rounded-circle" style="width:40px;" src="assets/images/user/avatar-1.jpg" alt="activity-user"></td> -->
+                                                            <td class = "col-6">
+                                                                <h6 class="mb-1">{{ key }}</h6>
+                                                                <!-- <p class="m-0">AI Model</p> -->
+                                                            </td>
+                                                            <td class = "col-5">
+                                                                <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>11 MAY 12:56</h6>
+                                                            </td>
+                                                            <!-- <td><a href="#!" class="label theme-bg2 text-white f-12">Delete</a> -->
+                                                        </tr>
+                                                        <!-- <tr class="unread"> -->
+                                                            <!-- <td><img class="rounded-circle" style="width:40px;" src="assets/images/user/avatar-2.jpg" alt="activity-user"></td> -->
+                                                            <!-- <td>
+                                                                <h6 class="mb-1">Face Detection</h6>
+                                                                <p class="m-0">Nlp Model</p>
+                                                            </td>
+                                                            <td>
+                                                                <h6 class="text-muted"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>11 MAY 10:35</h6>
+                                                            </td>
+                                                            <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a>
+                                                        </tr> -->
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="col-6">
+                                                <h4>Models</h4>
+                                                <table class="table table-hover col-6" >
                                                     <tbody>
                                                         {% for key in response %}
         
@@ -155,16 +185,14 @@
     <!-- Warning Section Ends -->
 
     <!-- Required Js -->
+    
+
+   
+
+    <!-- Required Js -->
 <script src="../static/assets/js/vendor-all.min.js"></script>
 	<script src="../static/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script src="../static/assets/js/pcoded.min.js"></script>
-
-    <script>
-        $('#myForm').submit(function () {
-        sendContactForm();
-        return false;
-        });
-    </script>
 
 </body>
 </html>

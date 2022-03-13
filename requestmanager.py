@@ -27,9 +27,9 @@ def role():
     if (request.method == 'POST'):
         rol = request.form['role']
         if(rol=='Data Scientist'):
-            return render_template('dem.html',authcode=None)
+            return render_template('dem.html',authcode="None",mesg="")
         else:
-            return render_template('dema.html',authcode=None)
+            return render_template('dema.html',authcode="None",mesg="")
 
 def decode_auth_token(auth_token):
     """
@@ -62,7 +62,7 @@ def signin():
 
         return render_template("Dashboard.html",response=response)
     else:
-        return render_template('dem.html',authcode="error")
+        return render_template('dem.html',authcode="error_signup",mesg=payload["message"])
     
 
 
@@ -82,7 +82,7 @@ def login():
             response =response.decode().split()
             return render_template("Dashboard.html",response=response,authcode=None)
         else:
-            return render_template('dem.html',authcode="error")
+            return render_template('dem.html',authcode="error_login",mesg=payload["message"])
 
 @app.route('/signup_AD', methods = ['GET', 'POST'])
 def signup():
@@ -100,7 +100,7 @@ def signup():
             response =response.decode().split()
             return render_template("Dashboard.html",response=response)
     else:
-        return render_template('dema.html',authcode="error")
+         return render_template('dem.html',authcode="error_signup",mesg=payload["message"])
 
 
 @app.route('/login_AD', methods = ['GET', 'POST'])
@@ -119,7 +119,7 @@ def logup():
             response =response.decode().split()
             return render_template("Dashboard.html",response=response)
         else:
-            return render_template('dema.html',authcode="error")
+            return render_template('dem.html',authcode="error_login",mesg=payload["message"])
 
 
 @app.route("/logout", methods = ['GET', 'POST'])
@@ -127,10 +127,10 @@ def logout():
     session["auth_token"] = None
     return redirect("/")
 
-@app.route('/Upload', methods = ['GET', 'POST'])
-def upload():
+@app.route('/Upload_DS', methods = ['GET', 'POST'])
+def uploadds():
     if(request.method=='POST'): 
-        
+
         # Send this request to Scheduler
 
         
@@ -141,17 +141,9 @@ def upload():
 
         to_send={}
 
-        global username
-        
-
-        #########################
-        #########Authentication Check
-        # auth_header = request.headers.get('Authorization')
-        # if auth_header:
-        #     auth_token = auth_header.split(" ")[1]
-        # else:
-        #     auth_token = ''
-
+        # global username
+        username = request.form["username"]
+       
         if  session["auth_token"] :
             resp = decode_auth_token( session["auth_token"] )
             if not isinstance(resp, str):
@@ -159,29 +151,50 @@ def upload():
                 f.save(os.path.join("./Data/Model/", f.filename))
                 to_send["username"]=username
                 to_send["model_name"]=f.filename
-                response=requests.post('http://localhost:1237/add_model',json=to_send).content.decode()
+                response=requests.post('http://localhost:1237/add_model',json=to_send).content
                 if(response.decode()=="ok"):
                     return "Model uploaded"
                 else:
                     return "error"
-
-
                 print(f)
                 print(f.filename)
-
-                # f.save(secure_filename(f.filename))
-                # form = cgi.FieldStorage()
-                # this_fileitem = form['filename']
-                # if f.filename:
-                #     fn = os.path.basename(f.filename)
-                #     open('./Data/Model/' + fn, 'w').write(f.file.read())
-                #     message = 'The file "' + fn + '" was uploaded successfully'
-                # else:
-                #     message = 'No file was uploaded'
-                # print(message)
                 return "KK"
         else:
             return "error"
+
+@app.route('/Upload_AD', methods = ['GET', 'POST'])
+def uploadad():
+    if(request.method=='POST'): 
+
+        # Send this request to Scheduler
+
+        
+
+        # Just maintaining a copy here.
+
+        # app.config['UPLOAD_FOLDER'] = "./Data/Model/"
+
+        to_send={}
+
+        # global username
+        
+        username = request.form["username"]
+        if  session["auth_token"] :
+            resp = decode_auth_token( session["auth_token"] )
+            if not isinstance(resp, str):
+                f = request.files['filename']
+                f.save(os.path.join("./Data/App/", f.filename))
+
+                to_send["username"]=username
+                to_send["app_name"]=f.filename
+                response=requests.post('http://localhost:1237/add_app',json=to_send).content
+                if(response.decode()=="ok"):
+                    return "app uploaded"
+                else:
+                    return "error"
+        else:
+            return "error"
+
 
 
 if(__name__ == '__main__'):

@@ -57,10 +57,8 @@
                 <div class="button input-box">
                   <input type="submit" value="Sumbit">
                 </div>
-                {% if authcode %}
+                {% if authcode == "error_login" %}
                 <p class="text-danger text-center"  style="color: red;">Invalid Credentials</p>
-                {% else %}
-                <p style="visibility:hidden;">text</p>
                 {% endif %}
                 <div class="text sign-up-text">Don't have an account? <label for="flip">Sigup now</label></div>
               </div>
@@ -93,6 +91,9 @@
                 <div class="button input-box">
                   <input type="submit" value="Sumbit">
                 </div>
+                {% if authcode == "error_signup" %}
+                <p class="text-danger text-center"  style="color: red;">Invalid Request</p>
+                {% endif %}
                 <div class="text sign-up-text">Already have an account? <label for="flip">Login now</label></div>
               </div>
         </form>
