@@ -34,14 +34,16 @@ def add_model():
         # db.session.add(new_model)
         # db.session.commit()
 
-        
+        print("--------------------------=============================")
         check_model=Models.query.filter_by(model_name=model_name).first()
         if(check_model is None):
             new_model = Models(username=username, model_name=model_name)
             db.session.add(new_model)
             db.session.commit()
+            print("-----------22---------=============================")
             return "ok"
         else:
+            print("--------------22------------=============================")
             return "Model Already Present"
        
 
@@ -64,7 +66,7 @@ def add_app():
         
         check_app=Apps.query.filter_by(App_name=app_name).first()
         if(check_app is None):
-            new_app = Apps(username=username, App_namw=app_name)
+            new_app = Apps(username=username, App_name=app_name)
             db.session.add(new_app)
             db.session.commit()
             return "ok"
@@ -93,6 +95,24 @@ def get_model():
             return "NONE"
         return res
 
+@app.route('/get_all_models', methods = ['GET', 'POST'])
+def get_all_model():
+    if(request.method=='POST'):
+        print("hi")
+        data=request.get_json()
+        
+        
+        models = Models.query.all()
+
+        res=""
+
+        for model in models:
+            res+=model.model_name+" "
+
+        if(res==""):
+            return "NONE"
+        return res
+
 @app.route('/get_apps', methods = ['GET', 'POST'])
 def get_app():
     if(request.method=='POST'):
@@ -104,7 +124,7 @@ def get_app():
         res=""
 
         for app in apps:
-            res+=app.app_name+" "
+            res+=app.App_name+" "
 
         if(res==""):
             return "NONE"
@@ -112,5 +132,6 @@ def get_app():
 
 
 if(__name__ == '__main__'):
-    app.run(port=1237,debug=True)
     db.create_all()
+    app.run(port=1237,debug=True)
+    

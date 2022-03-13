@@ -45,6 +45,34 @@ def decode_auth_token(auth_token):
     except jwt.InvalidTokenError:
         return 'Invalid token. Please log in again.'
 
+def dashboard_ds(username):
+    to_send={}
+    to_send["username"]=username
+    response=requests.post('http://localhost:1237/get_models',json=to_send).content
+    response =response.decode().split()
+    return render_template("Dashboard.html",response=response,username=username)
+
+def dashboard_AD(username):
+    to_send={}
+    to_send["username"]=username
+    response=requests.post('http://localhost:1237/get_apps',json=to_send).content
+    response =response.decode().split()
+    response2=requests.post('http://localhost:1237/get_all_models',json=to_send).content.decode().split()
+    return render_template("Dashboard1.html",response=response,response2=response2,username=username)
+
+@app.route('/dash_DS', methods = ['GET', 'POST'])
+def dashboard_ds_fun():
+    to_send={}
+    username = request.form["username"]
+    return dashboard_ds(username)
+    
+@app.route('/dash_AD', methods = ['GET', 'POST'])
+def dashboard_AD_fun():
+    to_send={}
+    username = request.form["username"]
+    return dashboard_AD(username)
+
+
 @app.route('/signup_DS', methods = ['GET', 'POST'])
 def signin():
     username=request.form['username']
@@ -54,13 +82,13 @@ def signin():
     response=requests.post('http://localhost:5000/add_user_DS',json={'username':username,'password':password}).content.decode()
     payload = json.loads(response)
     if(payload["message"]=="ok"):
-        to_send={}
-        to_send["username"] = username
-        session["auth_token"] = payload["auth_token"]
-        response=requests.post('http://localhost:1237/get_models',json=to_send).content
-        response =response.decode().split()
+        # to_send={}
+        # to_send["username"] = username
+        # session["auth_token"] = payload["auth_token"]
+        # response=requests.post('http://localhost:1237/get_models',json=to_send).content
+        # response =response.decode().split()
 
-        return render_template("Dashboard.html",response=response)
+        return dashboard_ds(username)
     else:
         return render_template('dem.html',authcode="error_signup",mesg=payload["message"])
     
@@ -75,12 +103,12 @@ def login():
         response=requests.post('http://localhost:5000/authen_DS',json={'username':username,'password':password}).content.decode()
         payload = json.loads(response)
         if(payload["message"]=="ok"):
-            to_send={}
-            to_send["username"]=username
-            session["auth_token"] = payload["auth_token"]
-            response=requests.post('http://localhost:1237/get_models',json=to_send).content
-            response =response.decode().split()
-            return render_template("Dashboard.html",response=response,authcode=None)
+            # to_send={}
+            # to_send["username"]=username
+            # session["auth_token"] = payload["auth_token"]
+            # response=requests.post('http://localhost:1237/get_models',json=to_send).content
+            # response =response.decode().split()
+            return dashboard_ds(username)
         else:
             return render_template('dem.html',authcode="error_login",mesg=payload["message"])
 
@@ -93,12 +121,13 @@ def signup():
     response=requests.post('http://localhost:5000/add_user_AD',json={'username':username,'password':password}).content.decode()
     payload = json.loads(response)
     if(payload["message"]=="ok"):
-            to_send={}
-            to_send["username"]=username
-            session["auth_token"] = payload["auth_token"]
-            response=requests.post('http://localhost:1237/get_apps',json=to_send).content
-            response =response.decode().split()
-            return render_template("Dashboard1.html",response=response)
+            # to_send={}
+            # to_send["username"]=username
+            # session["auth_token"] = payload["auth_token"]
+            # response=requests.post('http://localhost:1237/get_apps',json=to_send).content
+            # response =response.decode().split()
+            # return render_template("Dashboard1.html",response=response)
+            return dashboard_AD(username)
     else:
          return render_template('dema.html',authcode="error_signup",mesg=payload["message"])
 
@@ -112,12 +141,12 @@ def logup():
         response=requests.post('http://localhost:5000/authen_AD',json={'username':username,'password':password}).content.decode()
         payload = json.loads(response)
         if(payload["message"]=="ok"):
-            to_send={}
-            to_send["username"]=username
-            session["auth_token"] = payload["auth_token"]
-            response=requests.post('http://localhost:1237/get_apps',json=to_send).content
-            response =response.decode().split()
-            return render_template("Dashboard1.html",response=response)
+            # to_send={}
+            # to_send["username"]=username
+            # session["auth_token"] = payload["auth_token"]
+            # response=requests.post('http://localhost:1237/get_apps',json=to_send).content
+            # response =response.decode().split()
+            return dashboard_AD(username)
         else:
             return render_template('dema.html',authcode="error_login",mesg=payload["message"])
 
@@ -129,11 +158,12 @@ def logout():
 
 @app.route('/Upload_DS', methods = ['GET', 'POST'])
 def uploadds():
+    print("--------------------------=============================")
     if(request.method=='POST'): 
-
+        print("---sss---------------=============================")
         # Send this request to Scheduler
 
-        
+        redirect("url_for('operation')", code=307)        
 
         # Just maintaining a copy here.
 
@@ -144,23 +174,22 @@ def uploadds():
         # global username
         username = request.form["username"]
        
-        if  session["auth_token"] :
-            resp = decode_auth_token( session["auth_token"] )
-            if not isinstance(resp, str):
-                f = request.files['filename']
-                f.save(os.path.join("./Data/Model/", f.filename))
-                to_send["username"]=username
-                to_send["model_name"]=f.filename
-                response=requests.post('http://localhost:1237/add_model',json=to_send).content
-                if(response.decode()=="ok"):
-                    return "Model uploaded"
-                else:
-                    return "error"
-                print(f)
-                print(f.filename)
-                return "KK"
+   
+        f = request.files['filename']
+        f.save(os.path.join("./Data/Model/", f.filename))
+        to_send["username"]=username
+        to_send["model_name"]=f.filename
+    
+        response=requests.post('http://localhost:1237/add_model',json=to_send).content
+        if(response.decode()=="ok"):
+            return render_template("success.html",username=username)
+        
         else:
             return "error"
+        print(f)
+        print(f.filename)
+        return "KK"
+
 
 @app.route('/Upload_AD', methods = ['GET', 'POST'])
 def uploadad():
@@ -168,7 +197,7 @@ def uploadad():
 
         # Send this request to Scheduler
 
-        
+        redirect("url_for('operation')", code=307)
 
         # Just maintaining a copy here.
 
@@ -179,21 +208,18 @@ def uploadad():
         # global username
         
         username = request.form["username"]
-        if  session["auth_token"] :
-            resp = decode_auth_token( session["auth_token"] )
-            if not isinstance(resp, str):
-                f = request.files['filename']
-                f.save(os.path.join("./Data/App/", f.filename))
 
-                to_send["username"]=username
-                to_send["app_name"]=f.filename
-                response=requests.post('http://localhost:1237/add_app',json=to_send).content
-                if(response.decode()=="ok"):
-                    return "app uploaded"
-                else:
-                    return "error"
+        f = request.files['filename']
+        f.save(os.path.join("./Data/App/", f.filename))
+
+        to_send["username"]=username
+        to_send["app_name"]=f.filename
+        response=requests.post('http://localhost:1237/add_app',json=to_send).content
+        if(response.decode()=="ok"):
+            return render_template("success1.html",username=username)
         else:
             return "error"
+       
 
 
 
