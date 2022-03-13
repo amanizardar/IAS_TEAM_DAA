@@ -98,9 +98,9 @@ def signup():
             session["auth_token"] = payload["auth_token"]
             response=requests.post('http://localhost:1237/get_apps',json=to_send).content
             response =response.decode().split()
-            return render_template("Dashboard.html",response=response)
+            return render_template("Dashboard1.html",response=response)
     else:
-         return render_template('dem.html',authcode="error_signup",mesg=payload["message"])
+         return render_template('dema.html',authcode="error_signup",mesg=payload["message"])
 
 
 @app.route('/login_AD', methods = ['GET', 'POST'])
@@ -117,9 +117,9 @@ def logup():
             session["auth_token"] = payload["auth_token"]
             response=requests.post('http://localhost:1237/get_apps',json=to_send).content
             response =response.decode().split()
-            return render_template("Dashboard.html",response=response)
+            return render_template("Dashboard1.html",response=response)
         else:
-            return render_template('dem.html',authcode="error_login",mesg=payload["message"])
+            return render_template('dema.html',authcode="error_login",mesg=payload["message"])
 
 
 @app.route("/logout", methods = ['GET', 'POST'])
