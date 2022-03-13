@@ -122,7 +122,7 @@ def get_app():
         res=""
 
         for app in apps:
-            res+=app.app_name+" "
+            res+=app.App_name+" "
 
         if(res==""):
             return "NONE"

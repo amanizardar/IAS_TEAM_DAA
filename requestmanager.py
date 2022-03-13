@@ -24,6 +24,36 @@ def role():
             return render_template('dema.html')
 
 
+
+def dashboard_ds(username):
+    to_send={}
+    to_send["username"]=username
+    response=requests.post('http://localhost:1237/get_models',json=to_send).content
+    response =response.decode().split()
+    return render_template("Dashboard.html",response=response,username=username)
+
+def dashboard_AD(username):
+    to_send={}
+    to_send["username"]=username
+    response=requests.post('http://localhost:1237/get_apps',json=to_send).content
+    response =response.decode().split()
+    response2=requests.post('http://localhost:1237/get_all_models',json=to_send).content.decode().split()
+    return render_template("Dashboard1.html",response=response,response2=response2,username=username)
+
+
+@app.route('/dash_DS', methods = ['GET', 'POST'])
+def dashboard_ds_fun():
+    to_send={}
+    username = request.form["username"]
+    return dashboard_ds(username)
+    
+@app.route('/dash_AD', methods = ['GET', 'POST'])
+def dashboard_AD_fun():
+    to_send={}
+    username = request.form["username"]
+    return dashboard_AD(username)
+
+
 @app.route('/signup_DS', methods = ['GET', 'POST'])
 def signin():
     username=request.form['username']
@@ -32,15 +62,18 @@ def signin():
     # print("data got = ",data)
     response=requests.post('http://localhost:5000/add_user_DS',json={'username':username,'password':password}).content
     if(response.decode()=="ok"):
-        to_send={}
-        to_send["username"]=username
-        response=requests.post('http://localhost:1237/get_models',json=to_send).content
-        response =response.decode().split()
+        # to_send={}
+        # to_send["username"]=username
+        # response=requests.post('http://localhost:1237/get_models',json=to_send).content
+        # response =response.decode().split()
 
-        return render_template("Dashboard.html",response=response,username=username)
+        # return render_template("Dashboard.html",response=response,username=username)
+        return dashboard_ds(username)
     else:
         return "Error"
     
+
+
 
 
 @app.route('/login_DS', methods = ['GET', 'POST'])
@@ -51,11 +84,12 @@ def login():
         # data = request.get_json()
         response=requests.post('http://localhost:5000/authen_DS',json={'username':username,'password':password}).content.decode()
         if(response=="ok"):
-            to_send={}
-            to_send["username"]=username
-            response=requests.post('http://localhost:1237/get_models',json=to_send).content
-            response =response.decode().split()
-            return render_template("Dashboard.html",response=response,username=username)
+            # to_send={}
+            # to_send["username"]=username
+            # response=requests.post('http://localhost:1237/get_models',json=to_send).content
+            # response =response.decode().split()
+            # return render_template("Dashboard.html",response=response,username=username)
+            return dashboard_ds(username)
         else:
             return "Error"
 
@@ -67,13 +101,14 @@ def signup():
     # print("data got = ",data)
     response=requests.post('http://localhost:5000/add_user_AD',json={'username':username,'password':password}).content
     if(response.decode()=="ok"):
-            to_send={}
-            to_send["username"]=username
-            response=requests.post('http://localhost:1237/get_apps',json=to_send).content
-            response =response.decode().split()
-            response2=requests.post('http://localhost:1237/get_all_models',json=to_send).content.decode().split()
+            # to_send={}
+            # to_send["username"]=username
+            # response=requests.post('http://localhost:1237/get_apps',json=to_send).content
+            # response =response.decode().split()
+            # response2=requests.post('http://localhost:1237/get_all_models',json=to_send).content.decode().split()
 
-            return render_template("Dashboard1.html",response=response,response2=response2,username=username)
+            # return render_template("Dashboard1.html",response=response,response2=response2,username=username)
+            return dashboard_AD(username)
     else:
         return "Error"
 
@@ -86,12 +121,13 @@ def logup():
         password=request.form['password']
         response=requests.post('http://localhost:5000/authen_AD',json={'username':username,'password':password}).content.decode()
         if(response=="ok"):
-            to_send={}
-            to_send["username"]=username
-            response=requests.post('http://localhost:1237/get_apps',json=to_send).content
-            response =response.decode().split()
-            response2=requests.post('http://localhost:1237/get_all_models',json=to_send).content.decode().split()
-            return render_template("Dashboard1.html",response=response,response2=response2,username=username)
+            # to_send={}
+            # to_send["username"]=username
+            # response=requests.post('http://localhost:1237/get_apps',json=to_send).content
+            # response =response.decode().split()
+            # response2=requests.post('http://localhost:1237/get_all_models',json=to_send).content.decode().split()
+            # return render_template("Dashboard1.html",response=response,response2=response2,username=username)
+            return dashboard_AD(username)
         else:
             return "Error"
 
@@ -121,7 +157,7 @@ def uploadds():
         to_send["model_name"]=f.filename
         response=requests.post('http://localhost:1237/add_model',json=to_send).content
         if(response.decode()=="ok"):
-            return "Model uploaded"
+            return render_template("success.html",username=username)
         else:
             return "error"
 
@@ -156,7 +192,7 @@ def uploadad():
         to_send["app_name"]=f.filename
         response=requests.post('http://localhost:1237/add_app',json=to_send).content
         if(response.decode()=="ok"):
-            return "app uploaded"
+            return render_template("success1.html",username=username)
         else:
             return "error"
 
